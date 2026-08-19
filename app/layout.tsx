@@ -29,7 +29,7 @@ export default function RootLayout({
     <html
       lang="en"
       suppressHydrationWarning
-      className={cn("antialiased", fontMono.variable, nunitoSans.variable, "font-serif", notoSerif.variable)}
+      className={cn("antialiased", fontMono.variable, nunitoSans.variable, "font-sans", notoSerif.variable)}
     >
       <body>
         <ThemeProvider>{children}</ThemeProvider>
