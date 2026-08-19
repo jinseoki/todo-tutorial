@@ -6,7 +6,7 @@ export default function Page() {
     <h1 className="text-3xl font-bold tracking-tight">
       ✨{" "}
       <AuroraText colors={["#C2410C", "#9A3412", "#B45309", "#EA580C"]}>
-        오늘의 할일
+        오늘 할 일, 하나씩 해봐요
       </AuroraText>
     </h1>
   )
