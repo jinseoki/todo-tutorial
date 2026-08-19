@@ -128,6 +128,111 @@ describe("useTodos 카테고리", () => {
   });
 });
 
+describe("useTodos 편집", () => {
+  it("정상 텍스트로 편집하면 해당 항목의 텍스트만 변경된다", () => {
+    const { result } = renderHook(() => useTodos());
+
+    act(() => {
+      result.current.addTodo("원래 텍스트");
+    });
+    const id = result.current.todos[0].id;
+
+    act(() => {
+      result.current.editTodo(id, "수정된 텍스트");
+    });
+
+    expect(result.current.todos).toHaveLength(1);
+    expect(result.current.todos[0].text).toBe("수정된 텍스트");
+  });
+
+  it("편집 텍스트의 앞뒤 공백은 제거된다", () => {
+    const { result } = renderHook(() => useTodos());
+
+    act(() => {
+      result.current.addTodo("원래 텍스트");
+    });
+    const id = result.current.todos[0].id;
+
+    act(() => {
+      result.current.editTodo(id, "  다듬어진 텍스트  ");
+    });
+
+    expect(result.current.todos[0].text).toBe("다듬어진 텍스트");
+  });
+
+  it("빈 문자열로 편집하면 해당 항목이 삭제된다", () => {
+    const { result } = renderHook(() => useTodos());
+
+    act(() => {
+      result.current.addTodo("삭제될 할 일");
+    });
+    const id = result.current.todos[0].id;
+
+    act(() => {
+      result.current.editTodo(id, "");
+    });
+
+    expect(result.current.todos).toHaveLength(0);
+  });
+
+  it("공백만 있는 문자열로 편집해도 삭제 처리된다", () => {
+    const { result } = renderHook(() => useTodos());
+
+    act(() => {
+      result.current.addTodo("삭제될 할 일");
+    });
+    const id = result.current.todos[0].id;
+
+    act(() => {
+      result.current.editTodo(id, "   ");
+    });
+
+    expect(result.current.todos).toHaveLength(0);
+  });
+
+  it("여러 항목 중 하나를 빈 문자열로 편집하면 그 항목만 삭제되고 나머지는 유지된다", () => {
+    const { result } = renderHook(() => useTodos());
+
+    act(() => {
+      result.current.addTodo("할 일 A");
+    });
+    act(() => {
+      result.current.addTodo("할 일 B");
+    });
+    const idOfB = result.current.todos[0].id;
+
+    act(() => {
+      result.current.editTodo(idOfB, "");
+    });
+
+    expect(result.current.todos).toHaveLength(1);
+    expect(result.current.todos[0].text).toBe("할 일 A");
+  });
+});
+
+describe("useTodos 저장 실패", () => {
+  it("localStorage.setItem이 실패해도 예외를 던지지 않고 상태는 정상 반영된다", async () => {
+    const { result } = renderHook(() => useTodos());
+    await waitFor(() => expect(result.current.loaded).toBe(true));
+
+    const setItemSpy = vi
+      .spyOn(Storage.prototype, "setItem")
+      .mockImplementation(() => {
+        throw new DOMException("QuotaExceededError");
+      });
+
+    expect(() => {
+      act(() => {
+        result.current.addTodo("저장 실패해도 살아남는 할 일");
+      });
+    }).not.toThrow();
+
+    expect(result.current.todos[0].text).toBe("저장 실패해도 살아남는 할 일");
+
+    setItemSpy.mockRestore();
+  });
+});
+
 describe("useTodos 손상 데이터 보호", () => {
   it("파싱할 수 없는 저장값을 빈 배열로 덮어쓰지 않는다", async () => {
     localStorage.setItem("todos", "{이건 JSON이 아님");
