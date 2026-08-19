@@ -54,7 +54,11 @@ export function useTodos() {
     if (!loaded) return;
     // 로드 실패 후 사용자가 아무것도 추가하지 않았다면 손상된 원본을 빈 배열로 덮어쓰지 않는다.
     if (loadErrorRef.current && todos.length === 0) return;
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(todos));
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(todos));
+    } catch {
+      // 저장 용량 초과 등으로 실패해도 앱 상태에는 영향을 주지 않는다
+    }
   }, [todos, loaded]);
 
   function addTodo(
