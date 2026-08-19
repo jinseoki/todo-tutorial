@@ -22,8 +22,9 @@
 - Next.js 16 (App Router, Turbopack)
 - React 19
 - Tailwind CSS v4
-- shadcn/ui (radix-maia 스타일, taupe 베이스)
+- shadcn/ui (radix-mira 스타일, taupe 베이스)
 - TypeScript / ESLint / Prettier
+- Vitest / Testing Library
 - 패키지 매니저: bun 1.3.6
 
 ## 시작하기
@@ -44,6 +45,8 @@ bun run start      # 빌드 결과 실행
 bun run lint       # ESLint
 bun run typecheck  # tsc --noEmit
 bun run format     # Prettier 포맷팅
+bun test           # Vitest 실행
+bun run test:watch # Vitest watch 모드
 ```
 
 ## 챕터별 시작 브랜치
